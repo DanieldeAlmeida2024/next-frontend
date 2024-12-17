@@ -11,10 +11,13 @@ export default {
       colors: {
         default: "#242526",
         main: "#ffcd00",
+        error: "#f35759",
+        success: "#366912",
       },
       textColor: {
-        contrast: "#ffffff",
-      },
+        primary: "#242526",
+        contrast: "#ffffff"
+      }
     },
   },
   plugins: [],

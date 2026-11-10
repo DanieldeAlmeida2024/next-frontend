@@ -1,3 +1,34 @@
+# next-frontend
+
+Interface Next.js para rotas, motoristas e visualização de localização no laboratório de rastreamento.
+
+## Tecnologias
+Next.js, TypeScript, React e Google Maps.
+
+## Execução (após configurar dependências)
+```bash
+npm ci && npm run dev
+```
+
+**Validação sugerida:** `npm run build`. Não foi realizada nesta revisão documental.
+
+## Navegação
+Arquivos de referência: `src/app/, src/hooks/, src/utils/, package.json`.
+
+## Estado e riscos
+O README antigo chamava o frontend de Golang, mas o código é Next.js. Integração depende de backend, Google Maps e variáveis .env.
+
+## Guia técnico
+- [Requisitos](docs/REQUISITOS.md)
+- [Arquitetura](docs/ARQUITETURA.md)
+- [UML](docs/UML.puml)
+- [Plano de testes](docs/PLANO_TESTES.md)
+- [Instruções para IA](AGENTS.md)
+
+---
+
+## README histórico (algumas instruções podem estar desatualizadas)
+
 # Imersão Fullcycle 20 - Sistema de rastreamento de veículos
 
 ## Descrição
@@ -44,6 +75,3 @@ Rode o servidor:
 ```bash
 npm run dev
 ```
-
-
-

@@ -1,0 +1,15 @@
+@startuml
+actor Motorista
+participant StartRouteForm as F
+participant startRouteAction as S
+participant "NestJS API" as API
+Motorista -> F : route_id
+F -> S : FormData
+alt route_id vazio
+ S --> Motorista : Route ID is required
+else route_id preenchido
+ S -> API : POST /routes/:id/start
+ API --> S : status
+ S --> Motorista : success ou erro
+end
+@enduml

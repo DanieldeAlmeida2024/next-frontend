@@ -75,3 +75,10 @@ Rode o servidor:
 ```bash
 npm run dev
 ```
+
+## Documentação técnica individual (v1.0.0)
+
+- [Especificação do projeto](docs/projeto/ESPECIFICACAO.md)
+- [Fontes UML](docs/uml/README.md)
+- [Plano de testes](docs/testes/PLANO_DE_TESTES.md)
+- [Versionamento](docs/controle/VERSIONAMENTO.md)

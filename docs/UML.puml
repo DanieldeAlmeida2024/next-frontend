@@ -1,10 +1,19 @@
 @startuml
-title next-frontend - componentes conceituais
-actor Usuario
-component Entrada
-component Aplicacao
-component Integracoes
-Usuario --> Entrada
-Entrada --> Aplicacao
-Aplicacao --> Integracoes
+actor Operador
+component "Next.js App Router" as Web
+component "NewRouteForm / Server Action" as Form
+component "Driver / MapDriver" as Driver
+component "RouteHandler /api/routes/:id" as Proxy
+component "Google Maps JS" as Maps
+node "NestJS API" as Nest
+queue "Socket.IO" as Sock
+Operador --> Web
+Web --> Form
+Web --> Driver
+Web --> Proxy
+Form --> Nest : directions / routes
+Proxy --> Nest : GET route
+Driver --> Maps
+Driver --> Sock
+Sock --> Nest
 @enduml

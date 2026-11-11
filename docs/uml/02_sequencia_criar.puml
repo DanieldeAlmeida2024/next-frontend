@@ -1,0 +1,14 @@
+@startuml
+actor Usuario
+participant NewRouteForm as Form
+participant createRouteAction as Action
+participant "NestJS API" as Nest
+Usuario -> Form : sourceId / destinationId
+Form -> Action : FormData
+Action -> Nest : GET /directions?originId=...&destinationId=...
+Nest --> Action : routes[0].legs[0]
+Action -> Nest : POST /routes {name,source_id,destination_id}
+Nest --> Action : 2xx
+Action -> Action : revalidateTag("routes")
+Action --> Usuario : success
+@enduml

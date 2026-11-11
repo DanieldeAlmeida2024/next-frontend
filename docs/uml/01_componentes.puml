@@ -1,0 +1,19 @@
+@startuml
+actor Usuario
+component "App Router Next.js" as App
+component "createRouteAction" as Create
+component "startRouteAction" as Start
+component "GET /api/routes/[routeId]" as Get
+component "MapDriver.tsx" as Map
+component "Socket.IO client" as Socket
+node "NestJS API" as API
+App --> Create
+App --> Start
+App --> Get
+App --> Map
+Create --> API : directions / routes
+Start --> API : route/start
+Get --> API : route info
+Map --> Socket
+Socket --> API : eventos de pontos
+@enduml

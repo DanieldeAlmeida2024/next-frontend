@@ -31,3 +31,7 @@ npx tsc --noEmit
 ```
 
 O build isolado de `route-input.ts` é determinístico e não executa a API, banco, Socket.IO ou Google Maps. O workflow `.github/workflows/route-input-ci.yml` executa os testes e validação completa de tipos, **mas não prova autorização no backend** nem garante `next build` pronto para produção. Registrar o SHA e os jobs efetivos antes de marcar PASS.
+
+### Evidência CI e dependências que ainda bloqueiam publicação
+
+[Runs #43227794803](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43227794803) e [#43227935023](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43227935023): **SUCCESS** no commit `2923b600aee9a6366a18e09b62b33f0788a81061`, sete testes `node:test`, cinco testes Python wiring e `npx tsc --noEmit`. O workflow de `npm ci` relatou 23 vulnerabilidades (5 moderate, 16 high, 2 critical) no pacote completo instalado. Inventário separado de runtime será emitido pelo CI posterior; ainda **sem atualização de pacotes**. Testes de autorização de usuário no NestJS, TLS e build Next continuam pendentes.

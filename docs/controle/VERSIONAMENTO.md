@@ -25,3 +25,9 @@ MAJOR: contrato quebrado, MINOR: fluxo novo, PATCH: revisão editorial. Evidênc
 | NEXT-DOC | `docs/projeto/CONTRATO_ROTAS_INPUT.md`, `docs/testes/ROTAS_VALIDADAS.md`, `docs/uml/03_validacao_rotas_nest.puml` | Especificação, matriz de testes e UML próprios |
 
 **Sem merge/deploy/Vercel.** A validação de entrada não substitui autorização pelo NestJS. Pendências: E2E, Socket.IO, autenticação por operador, TLS e dependências antigas. Registrar SHA e CI depois da verificação final.
+
+### NEXT-DEPS — evidência de inventário instalada, não remediação (12/11/2026)
+
+- [GitHub Actions #43227935023](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43227935023), commit `2923b600aee9a6366a18e09b62b33f0788a81061`: `npm ci` relatou **23 vulnerabilidades instaladas** (**5 moderadas, 16 altas, 2 críticas**). Esse total ainda mistura dependências de runtime e desenvolvimento, **não é medida de exploração**.
+- [Issue #5](https://github.com/DanieldeAlmeida2024/next-frontend/issues/5) documenta triagem/upgrade pendentes de Next 15.0.3, React RC e transitivas. **Não houve atualização de pacote neste PR**.
+- O workflow de rota passa a gerar `audit-full.json` e `audit-runtime.json` como artefatos por sete dias e imprimir contagem por escopo. Apenas gate de disponibilidade do relatório, não gate zero vulnerabilidades até que PR específico de dependências remedeie achados. Novas execuções devem ser verificadas antes de citar números.

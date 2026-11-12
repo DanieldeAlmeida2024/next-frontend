@@ -79,3 +79,7 @@ npm run dev
 ## Documentação técnica específica
 
 [Projeto](docs/projeto/ESPECIFICACAO.md) · [UML](docs/uml/README.md) · [Testes](docs/testes/PLANO_DE_TESTES.md) · [Versionamento](docs/controle/VERSIONAMENTO.md)
+
+## Validação de rotas e API NestJS (NEXT-ROUTES v1.1.0 proposta)
+
+FormData de rotas e Place IDs, parâmetros de busca e resposta de Directions passam por validação tipada. GET `/api/routes/[routeId]` informa 400/404/502/503 e não mantém cache compartilhado de detalhes. Falhas upstream não produzem sucesso falso em ações POST; removida Server Action `.tsx` duplicada. CI usa `node:test`, TypeScript e inspeções Python, **sem API real nem deploy**. [Especificação](docs/projeto/CONTRATO_ROTAS_INPUT.md), [testes](docs/testes/ROTAS_VALIDADAS.md), [UML](docs/uml/03_validacao_rotas_nest.puml) e [versionamento](docs/controle/VERSIONAMENTO.md). **Autorização de rotas ainda precisa ser integrada no NestJS antes de produção.**

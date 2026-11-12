@@ -1,0 +1,45 @@
+@startuml
+title next-frontend — boundary route IDs, query params e upstream NestJS (NEXT-ROUTES 1.1)
+actor Usuário
+participant "Next Server Action / Route Handler" as Next
+participant "route-input.ts" as Guard
+participant "NestJS API" as Nest
+database "Armazenamento de rotas" as DB
+
+Usuário -> Next : FormData route_id / sourceId,destinationId ou GET /api/routes/:routeId
+Next -> Guard : parseRouteId / parsePlaceId / parseSearchTerm
+alt Entrada inválida
+  Guard --> Next : null
+  Next --> Usuário : Erro 400 ou mensagem de validação, sem fetch
+else Entrada válida
+  Guard --> Next : String normalizada
+  Next -> Guard : nestApiOrigin(NEST_API_URL)
+  alt Ambiente inválido
+    Guard --> Next : Error
+    Next --> Usuário : 503 ou erro de configuração
+  else Configuração válida
+    Guard --> Next : URL origin
+    opt Criação de rota
+      Next -> Nest : GET /directions com searchParams codificados
+      Nest --> Next : JSON
+      Next -> Guard : parseDirections(JSON)
+      alt Trajeto parcial
+        Guard --> Next : null
+        Next --> Usuário : Erro, sem POST de criação
+      end
+    end
+    Next -> Nest : GET rota ou POST start/create (no-store, redirect:error)
+    Nest -> DB : Consultar/alterar (autorização pertence ao NestJS)
+    Nest --> Next : status + JSON
+    alt HTTP upstream não-2xx ou erro de rede
+      Next --> Usuário : 404/502 ou mensagem genérica, sem sucesso falso
+    else HTTP 2xx
+      Next --> Usuário : Dados ou sucesso
+    end
+  end
+end
+note bottom
+Não implementa autenticação. A rota mutável ainda requer identidade
+confiável no NestJS, TLS e teste E2E antes de publicar.
+end note
+@enduml

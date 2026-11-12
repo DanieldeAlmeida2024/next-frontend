@@ -23,3 +23,7 @@ npm ci && npm run build
 ```
 
 Teste de unidade não substitui E2E. Para simulação distribuída, usar MongoDB/Kafka descartáveis e stubs de API; para frontend, testar socket com dados sintéticos. Guardar SHA, ambiente, entradas, retorno, logs sem segredo e resultado por ID. Casos P0 são bloqueantes até evidência explícita.
+
+## NEXT-ROUTES v1.1.0 — novos casos e execução
+
+RT-01..RT-12 têm cobertura automatizada de validação pura (sete casos `node:test`) e wiring Python e TypeScript. NEXT-01..06 e NEXT-11 são parcialmente mitigados pela nova validação e respostas, mas **não são E2E**, pois o NestJS não foi conectado em staging. NEXT-07..10, RT-13..15 e build real Next/Google Maps seguem pendentes. [Plano detalhado](ROTAS_VALIDADAS.md).

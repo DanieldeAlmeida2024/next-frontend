@@ -17,3 +17,7 @@ npm ci && npm run build
 ```
 
 Consulte os [diagramas](../uml/README.md) e a [matriz de testes](../testes/PLANO_DE_TESTES.md); ambos devem ser mantidos sincronizados com o código.
+
+## NEXT-ROUTES v1.1.0 proposta — proteção de fronteiras de entrada
+
+Server Actions e Route Handler agora usam o helper validado `src/utils/route-input.ts` para IDs de rota/Google Places, origin de NestJS e shape de Directions. A consulta de detalhes desabilita cache compartilhado e diferencia HTTP 400/404/502/503. A página de busca usa parâmetros codificados. [Projeto e matriz próprios](CONTRATO_ROTAS_INPUT.md). **Não adiciona autenticação nem autorização**; essas dependem do backend NestJS e continuam bloqueantes para produção.

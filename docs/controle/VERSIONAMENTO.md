@@ -31,3 +31,12 @@ MAJOR: contrato quebrado, MINOR: fluxo novo, PATCH: revisão editorial. Evidênc
 - [GitHub Actions #43227935023](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43227935023), commit `2923b600aee9a6366a18e09b62b33f0788a81061`: `npm ci` relatou **23 vulnerabilidades instaladas** (**5 moderadas, 16 altas, 2 críticas**). Esse total ainda mistura dependências de runtime e desenvolvimento, **não é medida de exploração**.
 - [Issue #5](https://github.com/DanieldeAlmeida2024/next-frontend/issues/5) documenta triagem/upgrade pendentes de Next 15.0.3, React RC e transitivas. **Não houve atualização de pacote neste PR**.
 - O workflow de rota passa a gerar `audit-full.json` e `audit-runtime.json` como artefatos por sete dias e imprimir contagem por escopo. Apenas gate de disponibilidade do relatório, não gate zero vulnerabilidades até que PR específico de dependências remedeie achados. Novas execuções devem ser verificadas antes de citar números.
+
+### Evidência CI NEXT-ROUTES v1.1.0 + NEXT-DEPS — 12/11/2026
+
+- [Actions #43228455191](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43228455191), código e documentos `84cdd2f31844efc09c9922aa6d552ac9ccfdf229`: **SUCCESS**, 7 testes Node, 5 verificações Python wiring e `npx tsc --noEmit`.
+- Gate adicional de auditoria gerou dois relatórios `npm audit --json` e `npm audit --omit=dev --json` como artifact `next-frontend-npm-audit` com retenção 7 dias; falha quando npm não fornece metadata confiável. **Não é gate de zero achados.**
+- Resultado **full**: 23 vulnerabilidades (5 moderadas, 16 altas, 2 críticas).
+- Resultado **runtime --omit=dev**: **14 vulnerabilidades (2 moderadas, 10 altas, 2 críticas)**. A gravidade da dependência não prova exposição explorável, mas requer triagem por pacote e caminho executado.
+- [Issue #5](https://github.com/DanieldeAlmeida2024/next-frontend/issues/5) permanece **P0** para revisão/upgrade de Next/React e transitivas. [Issue #4](https://github.com/DanieldeAlmeida2024/next-frontend/issues/4) permanece P0 para autorização NestJS. **Sem autorização para deploy ou merge**.
+- Esta alteração é documental e produz novo SHA; conferir novamente checks do HEAD posterior antes de qualquer merge.

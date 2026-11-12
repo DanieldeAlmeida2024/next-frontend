@@ -35,3 +35,7 @@ O build isolado de `route-input.ts` é determinístico e não executa a API, ban
 ### Evidência CI e dependências que ainda bloqueiam publicação
 
 [Runs #43227794803](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43227794803) e [#43227935023](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43227935023): **SUCCESS** no commit `2923b600aee9a6366a18e09b62b33f0788a81061`, sete testes `node:test`, cinco testes Python wiring e `npx tsc --noEmit`. O workflow de `npm ci` relatou 23 vulnerabilidades (5 moderate, 16 high, 2 critical) no pacote completo instalado. Inventário separado de runtime será emitido pelo CI posterior; ainda **sem atualização de pacotes**. Testes de autorização de usuário no NestJS, TLS e build Next continuam pendentes.
+
+## Evidências e bloqueio real de dependências
+
+CI [#43228455191](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43228455191) no commit `84cdd2f31844efc09c9922aa6d552ac9ccfdf229`: **7 Node PASS, 5 Python PASS e TypeScript PASS**, auditoria full/runtime disponível em artefato (7 dias). Full: 23 findings (5 moderate, 16 high, 2 critical). Runtime --omit=dev: 14 findings (2 moderate, 10 high, 2 critical). Os testes RT-01..12 de validação não corrigem vulnerabilidades nem autorizam operações; revisão de pacotes em [issue #5](https://github.com/DanieldeAlmeida2024/next-frontend/issues/5) e autenticação em [issue #4](https://github.com/DanieldeAlmeida2024/next-frontend/issues/4) permanecem **pendentes**. Sem E2E NestJS ou `npm run build` nesta revisão.

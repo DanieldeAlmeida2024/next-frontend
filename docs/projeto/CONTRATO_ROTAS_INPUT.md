@@ -33,3 +33,7 @@ O frontend Next.js 15 recebe dados do navegador (`FormData`, query params e IDs 
 5. Formato de `DirectionsResponseData` é validado apenas para campos usados na criação; não demonstra que a geolocalização, trajetos ou distâncias do fornecedor estejam corretos.
 
 [Plano próprio](../testes/ROTAS_VALIDADAS.md) · [Diagrama editável](../uml/03_validacao_rotas_nest.puml) · [Versionamento](../controle/VERSIONAMENTO.md).
+
+## Gate de segurança externo a este contrato
+
+[GitHub Actions #43228455191](https://github.com/DanieldeAlmeida2024/next-frontend/actions/runs/43228455191) aprovou Node/Python/TS no commit `84cdd2f31844efc09c9922aa6d552ac9ccfdf229`, mas o inventário npm mostra **14 findings runtime** (2 críticos, 10 altos e 2 moderados), além de 23 no inventário completo. A correção de parâmetros **não mitiga esses pacotes**. O desenvolvimento seguro depende de upgrade testado conforme [issue #5](https://github.com/DanieldeAlmeida2024/next-frontend/issues/5), de autorização por usuário/rota conforme [issue #4](https://github.com/DanieldeAlmeida2024/next-frontend/issues/4) e de testes `next build`/E2E antes de produção.

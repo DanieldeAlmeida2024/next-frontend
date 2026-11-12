@@ -1,63 +1,50 @@
 import { MapNewRoute } from "./MapNewRoute";
 import { NewRouteForm } from "./NewRouteForm";
+import { nestApiUrl, parsePlaceId, parseSearchTerm, parseDirections } from "../../utils/route-input";
 
 export async function searchDirections(source: string, destination: string) {
-  console.log(source, destination);
-  const [sourceResponse, destinationResponse] = await Promise.all([
-    fetch(`${process.env.NEST_API_URL}/places?text=${source}`, {
-      // cache: "force-cache", //default
-      // next: {
-      //   revalidate: 1 * 60 * 60 * 24, // 1 dia
-      // }
-    }),
-    fetch(`${process.env.NEST_API_URL}/places?text=${destination}`, {
-      // cache: "force-cache", //default
-      // next: {
-      //   revalidate: 1 * 60 * 60 * 24, // 1 dia
-      // }
-    }),
-  ]);
-
-  if (!sourceResponse.ok) {
-    console.error(await sourceResponse.text());
-    throw new Error("Failed to fetch source data");
+  const sourceTerm = parseSearchTerm(source);
+  const destinationTerm = parseSearchTerm(destination);
+  if (!sourceTerm || !destinationTerm) {
+    throw new Error("Origem e destino devem conter texto válido com até 120 caracteres.");
   }
 
-  if (!destinationResponse.ok) {
-    console.error(await destinationResponse.text());
-    throw new Error("Failed to fetch destination data");
+  const sourceUrl = nestApiUrl(process.env.NEST_API_URL, "/places");
+  const destinationUrl = nestApiUrl(process.env.NEST_API_URL, "/places");
+  sourceUrl.searchParams.set("text", sourceTerm);
+  destinationUrl.searchParams.set("text", destinationTerm);
+
+  const [sourceResponse, destinationResponse] = await Promise.all([
+    fetch(sourceUrl.toString(), { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(10_000) }),
+    fetch(destinationUrl.toString(), { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(10_000) }),
+  ]);
+
+  if (!sourceResponse.ok || !destinationResponse.ok) {
+    throw new Error("Não foi possível consultar origem e destino.");
   }
 
   const [sourceData, destinationData] = await Promise.all([
     sourceResponse.json(),
     destinationResponse.json(),
   ]);
-
-  const placeSourceId = sourceData.candidates[0].place_id;
-  const placeDestinationId = destinationData.candidates[0].place_id;
-
-  const directionsResponse = await fetch(
-    `${process.env.NEST_API_URL}/directions?originId=${placeSourceId}&destinationId=${placeDestinationId}`,
-    {
-      // cache: "force-cache", //default
-      // next: {
-      //   revalidate: 1 * 60 * 60 * 24, // 1 dia
-      // },
-    }
-  );
-
-  if (!directionsResponse.ok) {
-    console.error(await directionsResponse.text());
-    throw new Error("Failed to fetch directions");
+  const placeSourceId = parsePlaceId(sourceData?.candidates?.[0]?.place_id);
+  const placeDestinationId = parsePlaceId(destinationData?.candidates?.[0]?.place_id);
+  if (!placeSourceId || !placeDestinationId) {
+    throw new Error("Nenhum local válido foi encontrado.");
   }
 
-  const directionsData = await directionsResponse.json();
+  const directionsUrl = nestApiUrl(process.env.NEST_API_URL, "/directions");
+  directionsUrl.searchParams.set("originId", placeSourceId);
+  directionsUrl.searchParams.set("destinationId", placeDestinationId);
 
-  return {
-    directionsData,
-    placeSourceId,
-    placeDestinationId,
-  };
+  const directionsResponse = await fetch(directionsUrl.toString(), {
+    cache: "no-store", redirect: "error", signal: AbortSignal.timeout(10_000),
+  });
+  if (!directionsResponse.ok) throw new Error("Não foi possível consultar o trajeto.");
+  const directionsData = await directionsResponse.json();
+  if (!parseDirections(directionsData)) throw new Error("Trajeto incompleto no serviço de mapas.");
+
+  return { directionsData, placeSourceId, placeDestinationId };
 }
 
 export async function NewRoutePage({

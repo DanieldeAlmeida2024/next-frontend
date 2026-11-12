@@ -20,5 +20,7 @@ jobs:
         run: npx tsc --target ES2020 --module commonjs --lib ES2020,DOM --strict --skipLibCheck --rootDir src --outDir .test-build src/utils/route-input.ts
       - name: Testar entradas adversariais de rotas
         run: node --test tests/route-input.test.cjs
+      - name: Inspecionar wiring de handlers e Server Actions
+        run: python3 -m unittest discover -s tests -p 'test_route_wiring.py' -v
       - name: Verificar TypeScript completo
         run: npx tsc --noEmit

@@ -1,0 +1,24 @@
+name: next-frontend - contratos de rotas e validação TypeScript
+on:
+  pull_request:
+  push:
+    branches: [main, fix/routes-input-validation-upstream-errors-20261112]
+permissions:
+  contents: read
+jobs:
+  route-input:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependências fixadas
+        run: npm ci
+      - name: Compilar validador isolado TypeScript (sem Next nem rede)
+        run: npx tsc --target ES2020 --module commonjs --lib ES2020,DOM --strict --skipLibCheck --rootDir src --outDir .test-build src/utils/route-input.ts
+      - name: Testar entradas adversariais de rotas
+        run: node --test tests/route-input.test.cjs
+      - name: Verificar TypeScript completo
+        run: npx tsc --noEmit

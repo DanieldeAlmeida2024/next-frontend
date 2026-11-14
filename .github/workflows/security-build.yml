@@ -19,5 +19,7 @@ jobs:
         run: npm audit --audit-level=high
       - name: Validar ESLint explicitamente
         run: npm run lint
+      - name: Testar contratos de rota, URLs e credenciais
+        run: npm test
       - name: Validar compilação da aplicação
         run: npm run build

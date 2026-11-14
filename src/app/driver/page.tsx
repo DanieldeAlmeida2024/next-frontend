@@ -1,18 +1,19 @@
 import { RouteModel } from "../../utils/models";
 import { MapDriver } from "./MapDriver";
 import { StartRouteForm } from "./StartRouteForm";
+import { demoRoutesEnabled, nestRoutesConfig } from "../../utils/server-routes";
 
 // Consulta o backend no momento da requisição, nunca durante o build.
 export const dynamic = "force-dynamic";
 
 async function getRoutes(): Promise<RouteModel[] | null> {
-  const base = process.env.NEST_API_URL;
-  if (!base) return null;
-
+  if (!demoRoutesEnabled()) return null;
   try {
-    const response = await fetch(`${base}/routes`, {
-      cache: "force-cache",
-      next: { tags: ["routes"] },
+    const config = nestRoutesConfig("/routes");
+    const response = await fetch(config.url.toString(), {
+      headers: config.headers,
+      cache: "no-store",
+      redirect: "error",
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) return null;

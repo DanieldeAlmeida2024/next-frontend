@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useMap } from "../../hooks/useMap";
 import { socket } from "../../utils/socket-io";
 
-export function AdminPage() {
+function AdminPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const map = useMap(mapContainerRef);
 

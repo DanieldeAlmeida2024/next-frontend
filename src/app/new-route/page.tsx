@@ -1,7 +1,7 @@
 import { MapNewRoute } from "./MapNewRoute";
 import { NewRouteForm } from "./NewRouteForm";
 
-export async function searchDirections(source: string, destination: string) {
+async function searchDirections(source: string, destination: string) {
   console.log(source, destination);
   const [sourceResponse, destinationResponse] = await Promise.all([
     fetch(`${process.env.NEST_API_URL}/places?text=${source}`, {
@@ -60,7 +60,7 @@ export async function searchDirections(source: string, destination: string) {
   };
 }
 
-export async function NewRoutePage({
+async function NewRoutePage({
   searchParams,
 }: {
   searchParams: Promise<{ source: string; destination: string }>;

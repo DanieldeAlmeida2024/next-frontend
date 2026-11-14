@@ -1,12 +1,23 @@
-# Requisitos iniciais — next-frontend
+# Requisitos — frontend de rotas e rastreamento
 
-Interface Next.js para rotas, motoristas e visualização de localização no laboratório de rastreamento.
+Versão 1.1.0 · 14/11/2026
 
-- RF-01: Inicializar componentes necessários e expor fluxo principal.
-- RF-02: Validar entradas, falhas de recursos e contratos existentes.
-- RF-03: Preservar integração com clientes/serviços documentados.
-- RNF-01: Dependências e configuração reproduzíveis.
-- RNF-02: Não publicar credenciais ou dados pessoais.
-- RNF-03: Testes unitários, integração e construção da aplicação.
+## Funcionais
 
-Os requisitos são hipóteses para validação, não prova de implementação. O README antigo chamava o frontend de Golang, mas o código é Next.js. Integração depende de backend, Google Maps e variáveis .env.
+- **RF01:** listar rotas recebidas do NestJS e permitir iniciar uma viagem.
+- **RF02:** pesquisar origem/destino, visualizar trajeto e criar nova rota.
+- **RF03:** exibir posição em tempo real recebida por Socket.IO.
+- **RF04:** consultar detalhes de rota por `/api/routes/[routeId]`.
+- **RF05:** sinalizar serviço de rotas indisponível em vez de falhar durante o build.
+- **RF06 (pendente):** autenticação/autorização para telas e ações de administração.
+
+## Não funcionais
+
+- **RNF01:** Next.js 15.5.29 e React 19.3.1 com lockfile reproduzível.
+- **RNF02:** CI obrigatória com `npm ci`, `npm audit --audit-level=high`, `npm run lint` e `npm run build`.
+- **RNF03:** não armazenar segredo privado em `NEXT_PUBLIC_*`; restringir a chave Google Maps no provedor.
+- **RNF04:** compatibilidade de tipos React 19 e páginas válidas no Next App Router.
+- **RNF05:** cabeçalhos de segurança e configuração por ambiente.
+- **RNF06 (pendente):** testes E2E, observabilidade, autenticação, gestão de sessões e segurança de localização.
+
+Os requisitos pendentes são explicitamente não homologados; sucesso de compilação/CI não significa que mapas e tracking funcionem em produção.

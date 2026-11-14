@@ -2,19 +2,32 @@ import { RouteModel } from "../../utils/models";
 import { MapDriver } from "./MapDriver";
 import { StartRouteForm } from "./StartRouteForm";
 
-export async function getRoutes() {
-  const response = await fetch(`${process.env.NEST_API_URL}/routes`, {
-    cache: "force-cache",
-    next: {
-      tags: ["routes"],
-    },
-  });
-  //revalidate por demanda
-  return response.json();
+// Consulta o backend no momento da requisição, nunca durante o build.
+export const dynamic = "force-dynamic";
+
+async function getRoutes(): Promise<RouteModel[] | null> {
+  const base = process.env.NEST_API_URL;
+  if (!base) return null;
+
+  try {
+    const response = await fetch(`${base}/routes`, {
+      cache: "force-cache",
+      next: { tags: ["routes"] },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) return null;
+    const data: unknown = await response.json();
+    return Array.isArray(data) ? data as RouteModel[] : null;
+  } catch {
+    return null;
+  }
 }
 
-export async function DriverPage() {
+async function DriverPage() {
   const routes = await getRoutes();
+  if (!routes) {
+    return <p role="alert" className="p-6 text-contrast">Serviço de rotas indisponível. Confira a configuração do backend.</p>;
+  }
 
   return (
     <div className="flex flex-1 w-full h-full">

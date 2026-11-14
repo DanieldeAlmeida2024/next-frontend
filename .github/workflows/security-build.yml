@@ -1,0 +1,23 @@
+name: Auditoria e build Next.js
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  qualidade:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Detectar vulnerabilidades altas ou críticas
+        run: npm audit --audit-level=high
+      - name: Validar ESLint explicitamente
+        run: npm run lint
+      - name: Validar compilação da aplicação
+        run: npm run build

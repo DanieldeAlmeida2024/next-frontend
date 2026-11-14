@@ -1,10 +1,33 @@
 @startuml
-title next-frontend - componentes conceituais
-actor Usuario
-component Entrada
-component Aplicacao
-component Integracoes
-Usuario --> Entrada
-Entrada --> Aplicacao
-Aplicacao --> Integracoes
+title Next Frontend — fluxo de rotas e posições
+actor "Usuário" as User
+rectangle "Next.js App Router" {
+  component "/new-route page" as New
+  component "/driver page" as Driver
+  component "/admin page" as Admin
+  component "Server Actions" as Actions
+  component "API /routes/{id}" as API
+}
+component "Google Maps JS" as Maps
+component "Socket.IO Client" as Socket
+cloud "NestJS REST" as Nest
+cloud "NestJS Socket.IO" as Ws
+User --> New : pesquisa / cria
+User --> Driver : inicia rota
+User --> Admin : mapa em tempo real
+New --> Actions : createRouteAction
+Driver --> Actions : startRouteAction
+Actions --> Nest : /places, /directions, /routes
+Driver --> Nest : lista rotas SSR
+API --> Nest : consulta rota
+New --> Maps : mapa
+Driver --> Maps : trajetos
+Admin --> Maps : posições
+Driver --> Socket : escuta rota
+Admin --> Socket : escuta todas
+Socket --> Ws : WebSocket
+note bottom of Admin
+  Autorização ainda pendente:
+  não expor publicamente.
+end note
 @enduml

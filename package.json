@@ -10,7 +10,7 @@
     "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^3.4.0",
+    "@googlemaps/google-maps-services-js": "^3.4.2",
     "@googlemaps/js-api-loader": "^1.16.8",
     "lodash": "^4.17.21",
     "next": "15.5.29",

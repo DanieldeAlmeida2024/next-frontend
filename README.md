@@ -18,6 +18,21 @@ Arquivos de referência: `src/app/, src/hooks/, src/utils/, package.json`.
 ## Estado e riscos
 O README antigo chamava o frontend de Golang, mas o código é Next.js. Integração depende de backend, Google Maps e variáveis .env.
 
+
+## Status de segurança (13/11/2026) — pendência P0 aberta
+
+A dependência direta `next@15.0.3` e o React em versão RC são antigos. **Este PR não os considera corrigidos**: o lockfile continua original, para não prometer um build de produção sem atualizar e executar as dependências. Foi adicionada a auditoria `npm audit --audit-level=high`, um workflow de compilação e o Dependabot semanal para propor mudanças sincronizadas de `package.json` + `package-lock.json`.
+
+O `next.config.ts` agora define cabeçalhos `nosniff`, anti-frame e políticas de referrer/permissões. Esses cabeçalhos são defesa adicional, não resolvem CVEs de dependências nem autorização de rotas. **Não publicar** até atualização auditada (recomendação atual de manutenção: Next 15.5.29 ou superior da linha corrigida), teste de build, verificação de Google Maps e revisão do backend NestJS. As issues P0 permanecem abertas.
+
+```bash
+npm ci
+npm audit --audit-level=high
+npm run build
+```
+
+Após atualizar dependências, confirmar que o lockfile foi regenerado pelo npm e commitado junto com o manifesto. Não desabilitar o gate de auditoria para obter um falso verde.
+
 ## Guia técnico
 - [Requisitos](docs/REQUISITOS.md)
 - [Arquitetura](docs/ARQUITETURA.md)

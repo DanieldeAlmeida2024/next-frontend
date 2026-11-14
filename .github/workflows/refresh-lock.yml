@@ -1,0 +1,40 @@
+name: Atualizar lockfile de segurança Next.js (branch de auditoria)
+on:
+  push:
+    branches:
+      - fix/auditoria-entrevista-20261113
+    paths:
+      - .github/workflows/refresh-lock.yml
+permissions:
+  contents: write
+concurrency:
+  group: atualizar-lock-auditoria-next
+  cancel-in-progress: false
+jobs:
+  atualizar:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Regenerar lockfile com versões de manutenção atualizadas
+        run: |
+          npm install --save-exact next@15.5.29 react@19.3.0 react-dom@19.3.0
+          npm install --save-dev --save-exact eslint-config-next@15.5.29 @types/react@19 @types/react-dom@19
+      - name: Instalação limpa e build
+        run: |
+          npm ci
+          npm run build
+      - name: Versionar manifesto e lockfile somente se build aprovado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(security): atualizar Next 15.5.29 e React 19 estável com lockfile"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

@@ -17,3 +17,7 @@ Sem autenticação de usuário, autorização por rota, hardening do Socket.IO e
 ## Histórico anterior
 
 As revisões anteriores estão descritas nos commits e nos documentos de arquitetura e testes do repositório. Não reinterpretar build bem-sucedido como homologação de produção.
+
+## Reconciliação de diagramas — 14/11/2026
+
+Recuperadas especificação histórica, matriz de casos e UML original, mantendo toda a configuração e os testes vigentes da `main`. A documentação antiga foi identificada como material de referência, não como evidência de homologação.

@@ -1,0 +1,18 @@
+@startuml
+actor Motorista
+participant "MapDriver" as Map
+participant "Socket.IO" as S
+participant "Route Handler Next" as R
+participant "NestJS" as N
+Motorista -> Map : selecionar routeId
+Map -> S : socket.connect/on(evento)
+S -> Map : server:new-points/routeId:list
+alt primeiro ponto da rota
+Map -> R : GET /api/routes/{routeId}
+R -> N : GET /routes/{routeId}
+N --> R : directions
+R --> Map : JSON de rota
+Map -> Map : addRouteWithIcons
+end
+Map -> Map : moveCar(lat,lng)
+@enduml

@@ -62,3 +62,9 @@ Como ainda não existe autenticação individual de operadores no frontend, as r
 Os formulários rejeitam IDs inválidos antes de chamar o backend, as buscas de locais utilizam parâmetros de URL codificados e o proxy não registra corpos de resposta de falhas ou aplica cache compartilhado. A busca Google Maps e o Socket.IO permanecem dependentes do backend e de suas próprias políticas de autenticação e limitação.
 
 Os testes usam `npm test` (Node.js 22, sem rede) e o pipeline mantém lint, auditoria de dependências e build.
+
+## Modelagem específica e diagramas para estudo
+
+[Especificação de referência](docs/projeto/ESPECIFICACAO.md) · [Matriz histórica](docs/testes/PLANO_DE_TESTES.md) · [UML e sequências](docs/uml/README.md).
+
+Esses arquivos preservam o desenho original; os contratos de código, integrações, credenciais e CI atuais estão nos documentos principais de arquitetura e testes deste repositório.

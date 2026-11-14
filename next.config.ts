@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // A CI executa npm run lint explicitamente: evita o wrapper legado de lint no next build.
+  eslint: { ignoreDuringBuilds: true },
   async headers() {
     return [
       {

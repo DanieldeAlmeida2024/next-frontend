@@ -2,7 +2,7 @@ import { RouteModel } from "../../utils/models";
 import { MapDriver } from "./MapDriver";
 import { StartRouteForm } from "./StartRouteForm";
 
-export async function getRoutes() {
+async function getRoutes() {
   const response = await fetch(`${process.env.NEST_API_URL}/routes`, {
     cache: "force-cache",
     next: {
@@ -13,7 +13,7 @@ export async function getRoutes() {
   return response.json();
 }
 
-export async function DriverPage() {
+async function DriverPage() {
   const routes = await getRoutes();
 
   return (

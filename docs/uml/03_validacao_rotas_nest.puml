@@ -1,0 +1,48 @@
+@startuml
+title Next.js → NestJS: dados de rota e credencial privada (revisão 14/11/2026)
+actor "Navegador local" as Browser
+participant "Next Server Actions / Route Handler" as Next
+participant "route-input.ts" as Input
+participant "server-routes.ts" as Private
+participant "NestJS /routes" as API
+database "MongoDB" as DB
+
+Browser -> Next : GET detalhe / criar ou iniciar rota
+Next -> Private : demoRoutesEnabled()
+alt Modo sem login não autorizado
+    Private --> Next : false (padrão)
+    Next --> Browser : 403 ou operação indisponível
+else Ambiente de laboratório opt-in
+    Private --> Next : true
+    Next -> Input : parseRouteId / parsePlaceId / parseDirections
+    alt Entrada inválida
+        Input --> Next : null
+        Next --> Browser : 400 / erro de formulário, sem escrita
+    else Contrato aceito
+        Input --> Next : dados validados
+        Next -> Private : nestRoutesConfig(path)
+        alt ROUTES_API_KEY ausente ou inválida
+            Private --> Next : erro
+            Next --> Browser : 503 / erro de configuração
+        else Configuração válida
+            Private --> Next : URL + x-routes-api-key (somente servidor)
+            Next -> API : GET/POST /routes (header privado, no-store)
+            API -> API : autentica ROUTES_API_KEY
+            alt Falha HTTP ou transporte
+                API --> Next : 4xx/5xx ou timeout
+                Next --> Browser : erro controlado, sem sucesso falso
+            else Requisição aceita
+                API -> DB : operação de rota
+                DB --> API : resultado
+                API --> Next : resposta
+                Next --> Browser : detalhes ou confirmação
+            end
+        end
+    end
+end
+note bottom
+Demonstração sem autenticação individual não é segura para deploy público.
+Pendente: identidade do operador, ACL por rota, autenticação Socket.IO,
+TLS real e testes E2E com NestJS/Kafka/MongoDB.
+end note
+@enduml

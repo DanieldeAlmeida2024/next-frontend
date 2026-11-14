@@ -1,9 +1,9 @@
 import { Loader } from "@googlemaps/js-api-loader";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { Map } from "../utils/map";
 import { getCurrentPosition } from "./geolocation";
 
-export function useMap(containerRef: React.RefObject<HTMLDivElement>) {
+export function useMap(containerRef: RefObject<HTMLDivElement | null>) {
   const [map, setMap] = useState<Map>();
 
   useEffect(() => {
@@ -18,7 +18,9 @@ export function useMap(containerRef: React.RefObject<HTMLDivElement>) {
         loader.importLibrary("marker"),
         getCurrentPosition({ enableHighAccuracy: true }),
       ]);
-      const map = new Map(containerRef.current!, {
+      const element = containerRef.current;
+      if (!element) return;
+      const map = new Map(element, {
         mapId: "8e0a97af9386fef", //theme
         zoom: 15,
         center: position,

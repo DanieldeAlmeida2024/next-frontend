@@ -1,5 +1,5 @@
 /** Server-side connection settings. Do not import from Client Components. */
-import { nestApiUrl } from "./route-input";
+import { nestApiUrl } from "./route-input.ts";
 
 export function demoRoutesEnabled(): boolean {
   return process.env.ALLOW_UNAUTHENTICATED_ROUTE_DEMO === "true";

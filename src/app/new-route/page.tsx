@@ -3,7 +3,7 @@ import { NewRouteForm } from "./NewRouteForm";
 import { nestApiUrl, parsePlaceId, parseSearchTerm, parseDirections } from "../../utils/route-input";
 import { demoRoutesEnabled } from "../../utils/server-routes";
 
-export async function searchDirections(source: string, destination: string) {
+async function searchDirections(source: string, destination: string) {
   if (!demoRoutesEnabled()) throw new Error("Demonstração de rotas desabilitada.");
   const sourceTerm = parseSearchTerm(source);
   const destinationTerm = parseSearchTerm(destination);
@@ -49,7 +49,7 @@ export async function searchDirections(source: string, destination: string) {
   return { directionsData, placeSourceId, placeDestinationId };
 }
 
-export async function NewRoutePage({
+async function NewRoutePage({
   searchParams,
 }: {
   searchParams: Promise<{ source: string; destination: string }>;

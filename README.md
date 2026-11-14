@@ -52,3 +52,13 @@ O workflow `.github/workflows/security-build.yml` verifica auditoria de dependê
 [Orquestração e arquitetura](../Sistema-de-rastreamento-de-veiculos---Curso-Full-Cycle-2.0-) · [Backend NestJS](../nestjs-api) · [Simulador Go](../golang-simulator) · [Mensageria Kafka](../kafka).
 
 [Requisitos](docs/REQUISITOS.md) · [Arquitetura](docs/ARQUITETURA.md) · [UML](docs/UML.puml) · [Plano de testes](docs/PLANO_TESTES.md).
+
+## Integração segura do laboratório com NestJS
+
+O NestJS exige a credencial privada `ROUTES_API_KEY` (mínimo 32 caracteres) no cabeçalho `x-routes-api-key` para operações em `/routes`. O Next.js agora envia essa chave **somente no servidor** em consultas, criação e início de rotas. Ela não deve ser definida com prefixo `NEXT_PUBLIC_` nem enviada a componentes React client-side.
+
+Como ainda não existe autenticação individual de operadores no frontend, as rotas demonstrativas ficam **desabilitadas por padrão**. Para o **ambiente local isolado**, configure `ALLOW_UNAUTHENTICATED_ROUTE_DEMO=true` no servidor Next.js, com as portas expostas somente em `127.0.0.1`. A API retorna 403 fora dessa modalidade. Isso **não** é autorização adequada para publicar o painel na internet.
+
+Os formulários rejeitam IDs inválidos antes de chamar o backend, as buscas de locais utilizam parâmetros de URL codificados e o proxy não registra corpos de resposta de falhas ou aplica cache compartilhado. A busca Google Maps e o Socket.IO permanecem dependentes do backend e de suas próprias políticas de autenticação e limitação.
+
+Os testes usam `npm test` (Node.js 22, sem rede) e o pipeline mantém lint, auditoria de dependências e build.

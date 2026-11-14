@@ -1,24 +1,34 @@
 "use server";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function startRouteAction(state: any, formData: FormData) {
-  const { route_id } = Object.fromEntries(formData);
+import { parseRouteId } from "../../utils/route-input";
+import { demoRoutesEnabled, nestRoutesConfig } from "../../utils/server-routes";
 
-  if(!route_id){
-    return { error: "Route ID is required" };
+export async function startRouteAction(
+  _state: { error?: string; success?: boolean } | null,
+  formData: FormData,
+) {
+  if (!demoRoutesEnabled()) return { error: "Operação indisponível sem autenticação." };
+  const routeId = parseRouteId(formData.get("route_id"));
+  if (!routeId) return { error: "Selecione uma rota válida." };
+
+  let config: ReturnType<typeof nestRoutesConfig>;
+  try {
+    config = nestRoutesConfig(`/routes/${encodeURIComponent(routeId)}/start`);
+  } catch {
+    return { error: "Serviço de rotas não configurado." };
   }
 
-  const response = await fetch(
-    `${process.env.NEST_API_URL}/routes/${route_id}/start`,
-    {
+  try {
+    const response = await fetch(config.url.toString(), {
       method: "POST",
-    }
-  );
-
-  if (!response.ok) {
-    console.error(await response.text());
-    return { error: "Failed to start route" };
+      headers: config.headers,
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) return { error: "Não foi possível iniciar a rota." };
+    return { success: true };
+  } catch {
+    return { error: "Serviço de rotas indisponível." };
   }
-
-  return { success: true };
 }

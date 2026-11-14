@@ -24,3 +24,14 @@ O `/driver` usa `dynamic = 'force-dynamic'` para não consultar o backend durant
 ## Limites de confiabilidade
 
 Não há autenticação ou autorização de administrador nesta camada; não promover o protótipo a serviço público sem esse controle. Não existem testes E2E contra NestJS, Kafka, Google Maps reais nem garantias de atualização em tempo real em ambiente publicado. O frontend não deve exibir informações de localização pessoal sem base legal, controles de acesso e retenção adequados.
+
+## Contrato Next.js ↔ NestJS — revisão 14/11/2026
+
+- `src/utils/route-input.ts` valida IDs, entradas de busca, origens HTTP(S) e a projeção dos dados de Maps, sem depender de Next.js.
+- `src/utils/server-routes.ts` lê `ROUTES_API_KEY` do servidor; nenhuma propriedade com `NEXT_PUBLIC_` recebe o segredo. A configuração inválida falha antes da requisição.
+- `create-route.action.ts` e `start-route.action.ts` recusam operações sem o modo demo local, validam entradas, usam `redirect: "error"` e timeout, encaminham a credencial apenas nas operações de rota.
+- `app/api/routes/[routeId]/route.ts` rejeita IDs inválidos, diferencia 403/400/404/502/503 e usa `no-store` para dados de localização.
+- `driver/page.tsx` solicita rotas com credencial do servidor e sem cache compartilhado.
+- `new-route/page.tsx` codifica termos pesquisados e valida estruturas retornadas antes do uso em componentes.
+
+Este contrato é um **laboratório opt-in sem autenticação de usuários**. Não permite declarar o painel seguro para exposição pública: falta identidade, autorização por rota, proteção do Socket.IO, proteção do Maps contra abuso e testes end-to-end.

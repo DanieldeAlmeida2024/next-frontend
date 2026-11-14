@@ -1,0 +1,31 @@
+name: Revisar lockfile transitorio Next.js (temporario)
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  corrigir-auditoria:
+    if: github.head_ref == 'fix/auditoria-entrevista-20261113'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Aplicar override seguro de PostCSS e corrigir transientes
+        run: |
+          npm pkg set 'devDependencies.postcss=^8.5.32' 'overrides.postcss=$postcss'
+          npm install --ignore-scripts
+          npm audit fix --ignore-scripts || echo 'Auditoria ainda pode ter alertas; gate principal permanece obrigatório.'
+          npm audit --audit-level=high || true
+      - name: Expor somente metadados de dependencias regenerados
+        run: |
+          echo '<<<BEGIN_PACKAGE_JSON>>>'
+          cat package.json
+          echo '<<<END_PACKAGE_JSON>>>'
+          echo '<<<BEGIN_PACKAGE_LOCK_JSON>>>'
+          cat package-lock.json
+          echo '<<<END_PACKAGE_LOCK_JSON>>>'

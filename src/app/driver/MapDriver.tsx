@@ -15,6 +15,7 @@ export function MapDriver({ routeIdElementId }: MapDriverProps) {
 
   useEffect(() => {
     if (!map || !routeIdElementId) return;
+    const activeMap = map;
     const found = document.getElementById(routeIdElementId);
     if (!(found instanceof HTMLSelectElement)) return;
     const element: HTMLSelectElement = found;
@@ -42,7 +43,7 @@ export function MapDriver({ routeIdElementId }: MapDriverProps) {
         if (disposed || subscribedGeneration !== generation ||
             !isMoveForRoute(value, routeId)) return;
         const data: DriverMovedPayload = value;
-        if (!map.hasRoute(routeId)) {
+        if (!activeMap.hasRoute(routeId)) {
           try {
             const response = await fetch(`/api/routes/${encodeURIComponent(routeId)}`,
               { cache: "no-store" });
@@ -51,7 +52,7 @@ export function MapDriver({ routeIdElementId }: MapDriverProps) {
             if (disposed || subscribedGeneration !== generation) return;
             const leg = route?.directions?.routes?.[0]?.legs?.[0];
             if (!validGps(leg?.start_location) || !validGps(leg?.end_location)) return;
-            map.addRouteWithIcons({
+            activeMap.addRouteWithIcons({
               routeId,
               startMarkerOptions: { position: leg.start_location },
               endMarkerOptions: { position: leg.end_location },
@@ -62,7 +63,7 @@ export function MapDriver({ routeIdElementId }: MapDriverProps) {
           }
         }
         if (!disposed && subscribedGeneration === generation) {
-          map.moveCar(routeId, { lat: data.lat, lng: data.lng });
+          activeMap.moveCar(routeId, { lat: data.lat, lng: data.lng });
         }
       };
 

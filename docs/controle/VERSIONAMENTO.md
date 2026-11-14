@@ -21,3 +21,7 @@ As revisões anteriores estão descritas nos commits e nos documentos de arquite
 ## Reconciliação de diagramas — 14/11/2026
 
 Recuperadas especificação histórica, matriz de casos e UML original, mantendo toda a configuração e os testes vigentes da `main`. A documentação antiga foi identificada como material de referência, não como evidência de homologação.
+
+## Diagrama de segurança do contrato de rotas — 14/11/2026
+
+Atualizada a sequência `docs/uml/03_validacao_rotas_nest.puml` com o código real do Next: validação de rota, `ROUTES_API_KEY` privada servidor-servidor, flag explícita de demonstração local, erros fail-closed e limites de autorização. Substitui a UML histórica do PR #3 de 12/11, que não incluía as alterações integradas em #17. Nenhum código ou segredo mudou nesta revisão.

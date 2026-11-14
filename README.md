@@ -1,44 +1,61 @@
-# next-frontend
+# Rastreamento de rotas — frontend Next.js
 
-Interface Next.js para rotas, motoristas e visualização de localização no laboratório de rastreamento.
+Interface web do laboratório **Imersão Fullcycle 20**. Gerencia rotas, permite iniciar uma viagem e mostra pontos de posição em mapas Google. O repositório é o **frontend em Next.js/React**, não o simulador Go nem o serviço NestJS.
 
-## Tecnologias
-Next.js, TypeScript, React e Google Maps.
+## Tecnologia e dependências
 
-## Execução (após configurar dependências)
+- **Next.js 15.5.29**, **React 19.3.1 estável**, TypeScript, Tailwind CSS e Socket.IO Client.
+- Google Maps JavaScript, Directions, Places e utilitários de mapas.
+- Backend NestJS e broker de eventos **externos a este frontend**.
+
+A atualização de segurança substituiu Next 15.0.3/React RC por versões estáveis e regenerou **package.json + package-lock.json no npm**. O `npm audit --audit-level=high` e o build são gates obrigatórios do GitHub Actions. Permanecem avisos moderados em dependências transitivas de desenvolvimento; eles não foram ocultados com flags de ignore.
+
+## Preparar e executar localmente
+
+Requer Node 22+ e npm. Depois de clonar:
+
 ```bash
-npm ci && npm run dev
+cp .env.example .env.local
+npm ci
+npm run dev
 ```
 
-**Validação sugerida:** `npm run build`. Não foi realizada nesta revisão documental.
+Em Windows PowerShell, use `Copy-Item .env.example .env.local` no lugar do `cp`.
 
-## Navegação
-Arquivos de referência: `src/app/, src/hooks/, src/utils/, package.json`.
+Ajuste os valores de `.env.local` conforme seu ambiente. O arquivo está ignorado pelo Git e não deve conter credenciais com acesso irrestrito. O Google Maps expõe a chave `NEXT_PUBLIC_...` ao navegador: **limite-a no Google Cloud Console por domínio/referrer e APIs autorizadas**.
 
-## Estado e riscos
-O README antigo chamava o frontend de Golang, mas o código é Next.js. Integração depende de backend, Google Maps e variáveis .env.
+| Variável | Usada por |
+| --- | --- |
+| `NEST_API_URL` | Server Actions, SSR de rotas e proxy API Next |
+| `NEXT_PUBLIC_NEST_API_URL` | Conexão Socket.IO do navegador |
+| `NEXT_PUBLIC_NEXT_API_URL` | Consultas das páginas de mapa à API do frontend |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Google Maps JavaScript no navegador |
 
+## Páginas e fluxo
 
-## Status de segurança (13/11/2026) — pendência P0 aberta
+- **`/new-route`**: pesquisa origem/destino no NestJS e cria rota; depende de Places/Directions.
+- **`/driver`**: lista rotas e permite iniciar a viagem, com visualização geográfica e Socket.IO. Consulta o NestJS em tempo de requisição e exibe indisponibilidade quando o serviço não responde.
+- **`/admin`**: mapa de posições em tempo real. Não há autenticação de administrador implementada neste frontend.
+- **`/api/routes/[routeId]`**: proxy server-side para obter detalhes da rota.
 
-A dependência direta `next@15.0.3` e o React em versão RC são antigos. **Este PR não os considera corrigidos**: o lockfile continua original, para não prometer um build de produção sem atualizar e executar as dependências. Foi adicionada a auditoria `npm audit --audit-level=high`, um workflow de compilação e o Dependabot semanal para propor mudanças sincronizadas de `package.json` + `package-lock.json`.
+**Limites:** telas são um protótipo de tracking, sem homologação E2E com Kafka, Mongo, NestJS e Google Maps reais. Não usar como painel público de controle sem autorização de usuários, tratamento de falhas de integração e testes de permissões; cabeçalhos HTTP de segurança não substituem autenticação.
 
-O `next.config.ts` agora define cabeçalhos `nosniff`, anti-frame e políticas de referrer/permissões. Esses cabeçalhos são defesa adicional, não resolvem CVEs de dependências nem autorização de rotas. **Não publicar** até atualização auditada (recomendação atual de manutenção: Next 15.5.29 ou superior da linha corrigida), teste de build, verificação de Google Maps e revisão do backend NestJS. As issues P0 permanecem abertas.
+## Verificação automática
 
 ```bash
 npm ci
 npm audit --audit-level=high
+npm run lint
 npm run build
 ```
 
-Após atualizar dependências, confirmar que o lockfile foi regenerado pelo npm e commitado junto com o manifesto. Não desabilitar o gate de auditoria para obter um falso verde.
+O workflow `.github/workflows/security-build.yml` executa os quatro comandos. O lint roda explicitamente com ESLint local (suportando Windows/Linux), pois o wrapper legado do Next 15 não funciona de forma consistente com todas as configurações. O `next build` não duplica esse lint, mas o gate de CI permanece obrigatório.
 
-## Guia técnico
-- [Requisitos](docs/REQUISITOS.md)
-- [Arquitetura](docs/ARQUITETURA.md)
-- [UML](docs/UML.puml)
-- [Plano de testes](docs/PLANO_TESTES.md)
-- [Instruções para IA](AGENTS.md)
+**Não comprovado por esse pipeline:** conexão à API real, precisão do GPS/mapas, controle de acesso, testes end-to-end ou deploy. Uma build verde não significa que esses serviços externos estejam operacionais.
+
+## Documentação
+
+[Requisitos](docs/REQUISITOS.md) · [Arquitetura](docs/ARQUITETURA.md) · [Modelo UML](docs/UML.puml) · [Plano de testes](docs/PLANO_TESTES.md) · [Instruções para manutenção/IA](AGENTS.md).
 
 ---
 

@@ -17,5 +17,7 @@ jobs:
       - run: npm ci
       - name: Detectar vulnerabilidades altas ou críticas
         run: npm audit --audit-level=high
+      - name: Validar ESLint explicitamente
+        run: npm run lint
       - name: Validar compilação da aplicação
         run: npm run build

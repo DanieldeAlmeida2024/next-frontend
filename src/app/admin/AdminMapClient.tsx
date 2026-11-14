@@ -12,6 +12,7 @@ function AdminMapClient() {
 
   useEffect(() => {
     if (!map) return;
+    const activeMap = map;
     let disposed = false;
 
     const handleMoved = async (payload: unknown) => {
@@ -19,16 +20,16 @@ function AdminMapClient() {
       const routeId = parseRouteId((payload as { route_id?: unknown }).route_id);
       if (!routeId || !isMoveForRoute(payload, routeId) || disposed) return;
       const data = payload;
-      if (!map.hasRoute(routeId)) {
+      if (!activeMap.hasRoute(routeId)) {
         try {
           const response = await fetch(`/api/routes/${encodeURIComponent(routeId)}`,
             { cache: "no-store" });
           if (!response.ok) return;
           const route = await response.json();
-          if (disposed || map.hasRoute(routeId)) return;
+          if (disposed || activeMap.hasRoute(routeId)) return;
           const leg = route?.directions?.routes?.[0]?.legs?.[0];
           if (!validGps(leg?.start_location) || !validGps(leg?.end_location)) return;
-          map.addRouteWithIcons({
+          activeMap.addRouteWithIcons({
             routeId,
             startMarkerOptions: { position: leg.start_location },
             endMarkerOptions: { position: leg.end_location },
@@ -38,7 +39,7 @@ function AdminMapClient() {
           return;
         }
       }
-      if (!disposed) map.moveCar(routeId, { lat: data.lat, lng: data.lng });
+      if (!disposed) activeMap.moveCar(routeId, { lat: data.lat, lng: data.lng });
     };
 
     socket.connect();

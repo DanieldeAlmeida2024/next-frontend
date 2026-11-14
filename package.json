@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "node scripts/lint.cjs"
+    "lint": "node scripts/lint.cjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.4.0",

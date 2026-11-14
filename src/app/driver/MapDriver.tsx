@@ -15,8 +15,9 @@ export function MapDriver({ routeIdElementId }: MapDriverProps) {
 
   useEffect(() => {
     if (!map || !routeIdElementId) return;
-    const element = document.getElementById(routeIdElementId);
-    if (!(element instanceof HTMLSelectElement)) return;
+    const found = document.getElementById(routeIdElementId);
+    if (!(found instanceof HTMLSelectElement)) return;
+    const element: HTMLSelectElement = found;
 
     let eventName: string | null = null;
     let movedHandler: ((data: unknown) => void) | null = null;

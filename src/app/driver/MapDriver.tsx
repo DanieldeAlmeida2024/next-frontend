@@ -3,62 +3,84 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "../../hooks/useMap";
 import { socket } from "../../utils/socket-io";
+import { parseRouteId } from "../../utils/route-input";
+import { isMoveForRoute, validGps } from "../../utils/route-socket-data";
+import type { DriverMovedPayload } from "../../utils/route-socket-data";
 
-export type MapDriverProps = {
-  routeIdElementId: string;
-};
+export type MapDriverProps = { routeIdElementId: string };
 
-export function MapDriver(props: MapDriverProps) {
-  const { routeIdElementId } = props;
+export function MapDriver({ routeIdElementId }: MapDriverProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const map = useMap(mapContainerRef);
 
   useEffect(() => {
-    if (!map || !routeIdElementId) {
-      return;
+    if (!map || !routeIdElementId) return;
+    const activeMap = map;
+    const found = document.getElementById(routeIdElementId);
+    if (!(found instanceof HTMLSelectElement)) return;
+    const element: HTMLSelectElement = found;
+
+    let eventName: string | null = null;
+    let movedHandler: ((data: unknown) => void) | null = null;
+    let generation = 0;
+    let disposed = false;
+
+    function unsubscribe() {
+      if (eventName && movedHandler) socket.off(eventName, movedHandler);
+      eventName = null;
+      movedHandler = null;
     }
 
-    const selectElement = document.querySelector(
-      `#${routeIdElementId}`
-    )!;
+    function onRouteChange() {
+      unsubscribe();
+      generation += 1;
+      const routeId = parseRouteId(element.value);
+      if (!routeId) return;
+      const subscribedGeneration = generation;
+      const name = `server:new-points/${routeId}:list`;
+
+      const handler = async (value: unknown) => {
+        if (disposed || subscribedGeneration !== generation ||
+            !isMoveForRoute(value, routeId)) return;
+        const data: DriverMovedPayload = value;
+        if (!activeMap.hasRoute(routeId)) {
+          try {
+            const response = await fetch(`/api/routes/${encodeURIComponent(routeId)}`,
+              { cache: "no-store" });
+            if (!response.ok) return;
+            const route = await response.json();
+            if (disposed || subscribedGeneration !== generation) return;
+            const leg = route?.directions?.routes?.[0]?.legs?.[0];
+            if (!validGps(leg?.start_location) || !validGps(leg?.end_location)) return;
+            activeMap.addRouteWithIcons({
+              routeId,
+              startMarkerOptions: { position: leg.start_location },
+              endMarkerOptions: { position: leg.end_location },
+              carMarkerOptions: { position: leg.start_location },
+            });
+          } catch {
+            return; // API do laboratório fora do ar: nunca aplicar posição parcial.
+          }
+        }
+        if (!disposed && subscribedGeneration === generation) {
+          activeMap.moveCar(routeId, { lat: data.lat, lng: data.lng });
+        }
+      };
+
+      eventName = name;
+      movedHandler = handler;
+      socket.on(name, handler);
+    }
 
     socket.connect();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handler = async (event: any) => {
-console.log('aaaaaa');
-      socket.offAny();
-      const routeId = event.target!.value;
-      socket.on(
-        `server:new-points/${routeId}:list`,
-        async (data: { route_id: string; lat: number; lng: number }) => {
-          if (!map.hasRoute(data.route_id)) {
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_NEXT_API_URL}/routes/${data.route_id}`
-            );
-            const route = await response.json();
-            map.addRouteWithIcons({
-              routeId: data.route_id,
-              startMarkerOptions: {
-                position: route.directions.routes[0].legs[0].start_location,
-              },
-              endMarkerOptions: {
-                position: route.directions.routes[0].legs[0].end_location,
-              },
-              carMarkerOptions: {
-                position: route.directions.routes[0].legs[0].start_location,
-              },
-            });
-          }
-          map.moveCar(data.route_id, { lat: data.lat, lng: data.lng });
-        }
-      );
-    }
-
-    selectElement.addEventListener("change", handler);
+    element.addEventListener("change", onRouteChange);
+    onRouteChange();
 
     return () => {
-      selectElement.removeEventListener("change", handler);
+      disposed = true;
+      generation += 1;
+      element.removeEventListener("change", onRouteChange);
+      unsubscribe();
       socket.disconnect();
     };
   }, [routeIdElementId, map]);

@@ -15,5 +15,11 @@ updates:
           - "@types/react"
           - "@types/react-dom"
     ignore:
+      # Migre Next e seu preset de lint juntos em um PR dedicado.
       - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-config-next"
+        update-types: ["version-update:semver-major"]
+      # Revise o preset e o formato da configuração antes de mudar o major do ESLint.
+      - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
